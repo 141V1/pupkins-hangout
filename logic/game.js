@@ -18,10 +18,11 @@ export const EMOTES = ['Wave', 'Cheer', 'Jump', 'Cute', 'Yes', 'Bow'];
 export default defineLogic({
   mode: 'presence',
   id: 'pupkins-hangout',
-  version: 1,   // bump it when the presence changes: players still on the old one are told to reload
+  version: 2,   // bump it when the presence changes: players still on the old one are told to reload
   // a player's state, field by field: the room keeps every field inside these (and rounds numbers to their step)
   presence: {
     x: { min: -(SQUARE + 2), max: SQUARE + 2 },
+    y: { min: 0, max: 4, step: 0.01 },      // height off the ground (jump)
     z: { min: -(SQUARE + 2), max: SQUARE + 2 },
     yaw: 'angle',                           // which way they face (radians; 0 faces +z, toward the camera)
     speed: { min: 0, max: 6, step: 0.1 },   // how fast they're going: the others' screens animate the walk and run from it

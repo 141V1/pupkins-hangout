@@ -50,6 +50,7 @@ addEventListener('keydown', (event) => {
   held.add(event.code);
   if (event.code.startsWith('Arrow') || event.code === 'Space') event.preventDefault();
   if (event.repeat || !world) return;
+  if (event.code === 'Space' && me.y === 0) me.vy = JUMP_SPEED;
   const n = Number(/^Digit([1-9])$/.exec(event.code)?.[1]);
   if (n && EMOTES[n - 1]) emote(EMOTES[n - 1]);
   if (event.code === 'KeyR') backToFountain();
@@ -82,7 +83,9 @@ function wanted() {
 }
 
 // ------------------------------------------------------------------ you
-const me = { x: game.defaults.x, z: game.defaults.z, yaw: game.defaults.yaw, speed: 0, avatar: null, tag: null };
+const me = { x: game.defaults.x, y: 0, z: game.defaults.z, yaw: game.defaults.yaw, speed: 0, vy: 0, avatar: null, tag: null };
+const GRAVITY = -18;
+const JUMP_SPEED = 7.5;
 const turn = (from, to) => Math.atan2(Math.sin(to - from), Math.cos(to - from));
 function walk(dt) {
   const { dx, dz, run } = wanted();
@@ -97,13 +100,17 @@ function walk(dt) {
   if (r < FOUNTAIN + 0.45) { const k = (FOUNTAIN + 0.45) / Math.max(r, 0.001); me.x *= k; me.z *= k; }
   me.x = Math.max(-SQUARE + 0.4, Math.min(SQUARE - 0.4, me.x));
   me.z = Math.max(-SQUARE + 0.4, Math.min(SQUARE - 0.4, me.z));
+  // jump
+  me.vy += GRAVITY * dt;
+  me.y += me.vy * dt;
+  if (me.y <= 0) { me.y = 0; me.vy = 0; }
 }
 function emote(name) {
   if (world?.emote(name)) me.avatar?.emote(name);   // (true when it went out: one a second)
 }
 function backToFountain() {
-  Object.assign(me, { x: game.defaults.x, z: game.defaults.z, yaw: game.defaults.yaw, speed: 0 });
-  world?.teleport({ x: me.x, z: me.z, yaw: me.yaw, speed: 0 });   // (a jump: the others see you appear there)
+  Object.assign(me, { x: game.defaults.x, y: 0, z: game.defaults.z, yaw: game.defaults.yaw, speed: 0, vy: 0 });
+  world?.teleport({ x: me.x, y: 0, z: me.z, yaw: me.yaw, speed: 0 });   // (a jump: the others see you appear there)
 }
 
 // ------------------------------------------------------------------ everyone else
@@ -194,26 +201,26 @@ function frame(now) {
   last = now;
   if (world) {
     walk(dt);
-    world.publish({ x: me.x, z: me.z, yaw: me.yaw, speed: me.speed });
+    world.publish({ x: me.x, y: me.y, z: me.z, yaw: me.yaw, speed: me.speed });
     if (me.avatar) {
-      me.avatar.root.position.set(me.x, 0, me.z);
+      me.avatar.root.position.set(me.x, me.y, me.z);
       me.avatar.root.rotation.y = me.yaw;
       me.avatar.setSpeed(me.speed);
       me.avatar.update(dt);
     }
-    placeTag(me.tag, me.x, me.avatar?.height ?? 1.15, me.z, 'You');
+    placeTag(me.tag, me.x, me.y + (me.avatar?.height ?? 1.15), me.z, 'You');
     const here = new Set();
     for (const peer of world.peers()) {
       here.add(peer.id);
       const c = castFor(peer);
-      const { x, z, yaw, speed } = peer.state;
+      const { x, y, z, yaw, speed } = peer.state;
       if (c.avatar) {
-        c.avatar.root.position.set(x, 0, z);
+        c.avatar.root.position.set(x, y ?? 0, z);
         c.avatar.root.rotation.y = yaw;
         c.avatar.setSpeed(speed);
         c.avatar.update(dt);
       }
-      placeTag(c.tag, x, c.avatar?.height ?? 1.15, z, peer.name);
+      placeTag(c.tag, x, (y ?? 0) + (c.avatar?.height ?? 1.15), z, peer.name);
     }
     for (const id of [...cast.keys()]) if (!here.has(id)) dropCast(id);
     const label = `${world.world ?? 'joining'} · ${world.count || 1} here`;
