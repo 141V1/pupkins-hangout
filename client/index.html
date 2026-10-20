@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pupkins Hangout</title>
+  <link rel="icon" href="data:," />
+  <!-- the SDK and three.js, as `npm run dev` serves them -->
+  <script type="importmap">
+    { "imports": {
+      "@pupkins/create/logic": "/node_modules/@pupkins/create/logic.js",
+      "@pupkins/create/client": "/node_modules/@pupkins/create/client.js",
+      "@pupkins/create/avatars": "/node_modules/@pupkins/create/avatars.js",
+      "@pupkins/create/scene": "/node_modules/@pupkins/create/scene.js",
+      "three": "/node_modules/@pupkins/create/three/three.module.js",
+      "three/addons/": "/node_modules/@pupkins/create/three/addons/"
+    } }
+  </script>
+  <style>
+    :root { color-scheme: dark; --bg: #0d1b2a; --ink: #f1f5f9; --accent: #fbbf24; --dim: #94a3b8; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: var(--bg); color: var(--ink); font: 16px/1.4 system-ui, sans-serif; }
+    main { position: relative; width: min(100vw, 177.78vh); aspect-ratio: 16 / 9; overflow: hidden; border-radius: 12px; }
+    #view { position: absolute; inset: 0; touch-action: none; }
+    #view canvas { width: 100%; height: 100%; display: block; }
+    .panel { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; gap: 12px; background: rgb(13 27 42 / 0.78); text-align: center; padding: 16px; overflow-y: auto; }
+    .panel > :first-child { margin-top: auto; }    /* centred when it fits, scrolling when it doesn't (a small screen) */
+    .panel > :last-child { margin-bottom: auto; }
+    .panel[hidden] { display: none; }
+    h1 { margin: 0 0 4px; font-size: clamp(28px, 5vw, 48px); }
+    button { font: inherit; padding: 10px 18px; min-width: 220px; border: 0; border-radius: 999px; background: var(--accent); color: #111; font-weight: 700; cursor: pointer; }
+    button.ghost { background: transparent; color: var(--ink); outline: 2px solid var(--dim); }
+    input { font: inherit; padding: 9px 14px; width: 220px; border-radius: 999px; border: 2px solid var(--dim); background: transparent; color: var(--ink); text-align: center; }
+    .note { color: var(--dim); font-size: 14px; max-width: 560px; }
+    #riders { display: flex; gap: 12px; justify-content: center; }
+    #riders button { min-width: 0; padding: 6px 6px 8px; border-radius: 16px; background: transparent; color: var(--ink); outline: 2px solid var(--dim); display: grid; gap: 4px; justify-items: center; font-size: 14px; }
+    #riders button.on { outline: 3px solid var(--accent); }
+    #riders img { width: 76px; height: 76px; border-radius: 12px; object-fit: cover; background: #1f3a56; }
+    #hud { position: absolute; top: 10px; left: 12px; right: 12px; display: flex; gap: 10px; align-items: center; justify-content: space-between; font-size: 14px; }
+    #hud[hidden] { display: none; }
+    #here { padding: 3px 12px; border-radius: 999px; background: rgb(13 27 42 / 0.6); font-weight: 700; }
+    #hud button { min-width: 0; padding: 5px 12px; font-size: 14px; background: rgb(13 27 42 / 0.6); color: var(--ink); outline: 2px solid var(--dim); }
+    #status { position: absolute; bottom: 58px; left: 0; right: 0; text-align: center; color: var(--ink); font-size: 14px; pointer-events: none; text-shadow: 0 1px 4px rgb(0 0 0 / 0.6); }
+    #tags { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+    .tag { position: absolute; transform: translate(-50%, -100%); padding: 1px 9px; border-radius: 999px; background: rgb(13 27 42 / 0.6); font-size: 13px; font-weight: 700; white-space: nowrap; }
+    .tag.you { color: var(--accent); }
+    #emotes { position: absolute; left: 0; right: 0; bottom: 12px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+    #emotes button { min-width: 0; padding: 7px 12px; font-size: 14px; background: rgb(13 27 42 / 0.6); color: var(--ink); outline: 2px solid var(--dim); }
+    #emotes[hidden] { display: none; }
+  </style>
+</head>
+<body>
+  <main>
+    <div id="view"></div>
+    <div id="tags"></div>
+    <div id="hud" hidden><span id="here"></span><span><button data-act="copy">Copy invite link</button> <button data-act="menu">Leave</button></span></div>
+    <div id="status"></div>
+    <div id="emotes" hidden></div>
+    <section class="panel" id="menu">
+      <h1>Pupkins Hangout</h1>
+      <p class="note">Pick who you are</p>
+      <div id="riders"></div>
+      <input id="name" maxlength="16" placeholder="Your name" autocomplete="nickname" />
+      <input id="world" maxlength="32" placeholder="plaza" aria-label="World" />
+      <button data-act="join">Join the square</button>
+      <p class="note">WASD or the arrow keys walk, Shift runs, 1 to 6 emote, R takes you back to the fountain. On a phone,
+        drag to walk (far to run). Everyone in the same world sees everyone else: give a friend the invite link.</p>
+    </section>
+  </main>
+  <script type="module" src="./main.js"></script>
+</body>
+</html>

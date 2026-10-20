@@ -1,0 +1,9 @@
+{
+  "id": "pupkins-hangout",
+  "name": "Pupkins Hangout",
+  "version": "0.1.0",
+  "sdk": "0.1",
+  "entry": "client/index.html",
+  "logic": "logic/game.js",
+  "multiplayer": { "mode": "presence" }
+}

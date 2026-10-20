@@ -1,0 +1,550 @@
+{
+  "format": 1,
+  "kind": "3d",
+  "name": "Fountain Square",
+  "environment": {
+    "sky": ["#5aa8f0", "#a9d8ff", "#e6f4ff"],
+    "fog": { "color": "#bfe3ff", "near": 45, "far": 95 },
+    "sun": {
+      "color": "#fff0d8",
+      "intensity": 2.8,
+      "azimuth": 222,
+      "elevation": 50,
+      "shadows": true,
+      "area": 16
+    },
+    "hemisphere": { "sky": "#cfe6ff", "ground": "#7fa05a", "intensity": 0.7 },
+    "ambient": 0.5,
+    "exposure": 1,
+    "toon": true
+  },
+  "camera": { "fov": 42, "near": 0.1, "far": 220, "target": [0, 0.9, 7], "position": [0, 5.8, 15.6] },
+  "logic": { "file": "logic/scene.js", "units": 1000 },
+  "materials": {
+    "meadow": { "color": "#6aa84f", "roughness": 1 },
+    "trunk": { "color": "#8a5a3b", "roughness": 0.9 },
+    "leaves": { "color": "#4fae4f", "roughness": 0.85 },
+    "leaves-light": { "color": "#63c25a", "roughness": 0.85 },
+    "leaves-dark": { "color": "#3f9a52", "roughness": 0.85 },
+    "paving": { "color": "#91a8bf", "roughness": 0.95, "texture": "paving", "repeat": [7.5, 7.5] },
+    "inlay": { "color": "#71879f", "roughness": 0.95 },
+    "stone": { "color": "#d9d2c3", "roughness": 0.8 },
+    "water": {
+      "color": "#5fb8e8",
+      "emissive": "#1d5f8a",
+      "emissiveIntensity": 0.35,
+      "roughness": 0.15,
+      "metalness": 0.1
+    },
+    "wood": { "color": "#9a6a43", "roughness": 0.85 },
+    "iron": { "color": "#3b4252", "roughness": 0.6, "metalness": 0.3 },
+    "glass": { "color": "#ffe9b0", "emissive": "#ffc86b", "emissiveIntensity": 0.8, "roughness": 0.4 }
+  },
+  "prefabs": {
+    "tree": {
+      "id": "tree",
+      "name": "Tree",
+      "type": "group",
+      "children": [
+        {
+          "id": "tree-trunk",
+          "name": "Trunk",
+          "type": "cylinder",
+          "radiusTop": 0.15,
+          "radiusBottom": 0.22,
+          "height": 2.5,
+          "segments": 8,
+          "position": [0, 1.25, 0],
+          "material": "trunk"
+        },
+        {
+          "id": "tree-crown",
+          "name": "Crown",
+          "type": "poly",
+          "shape": "icosa",
+          "radius": 1.4,
+          "detail": 1,
+          "position": [0, 3.05, 0],
+          "scale": [1, 1.15, 1],
+          "material": "leaves"
+        }
+      ]
+    },
+    "tree-light": {
+      "id": "tree-light",
+      "name": "Tree",
+      "type": "group",
+      "children": [
+        {
+          "id": "tree-light-trunk",
+          "name": "Trunk",
+          "type": "cylinder",
+          "radiusTop": 0.15,
+          "radiusBottom": 0.22,
+          "height": 2.5,
+          "segments": 8,
+          "position": [0, 1.25, 0],
+          "material": "trunk"
+        },
+        {
+          "id": "tree-light-crown",
+          "name": "Crown",
+          "type": "poly",
+          "shape": "icosa",
+          "radius": 1.4,
+          "detail": 1,
+          "position": [0, 3.05, 0],
+          "scale": [1, 1.15, 1],
+          "material": "leaves-light"
+        }
+      ]
+    },
+    "tree-dark": {
+      "id": "tree-dark",
+      "name": "Tree",
+      "type": "group",
+      "children": [
+        {
+          "id": "tree-dark-trunk",
+          "name": "Trunk",
+          "type": "cylinder",
+          "radiusTop": 0.15,
+          "radiusBottom": 0.22,
+          "height": 2.5,
+          "segments": 8,
+          "position": [0, 1.25, 0],
+          "material": "trunk"
+        },
+        {
+          "id": "tree-dark-crown",
+          "name": "Crown",
+          "type": "poly",
+          "shape": "icosa",
+          "radius": 1.4,
+          "detail": 1,
+          "position": [0, 3.05, 0],
+          "scale": [1, 1.15, 1],
+          "material": "leaves-dark"
+        }
+      ]
+    },
+    "bench": {
+      "id": "bench",
+      "name": "Bench",
+      "type": "group",
+      "children": [
+        {
+          "size": [1.9, 0.12, 0.55],
+          "id": "bench-seat",
+          "name": "Seat",
+          "type": "box",
+          "position": [0, 0.46, 0],
+          "material": "wood"
+        },
+        {
+          "size": [1.9, 0.5, 0.1],
+          "id": "bench-back",
+          "name": "Back",
+          "type": "box",
+          "position": [0, 0.8, 0.26],
+          "material": "wood"
+        },
+        {
+          "size": [0.1, 0.46, 0.5],
+          "id": "bench-leg-1",
+          "name": "Leg",
+          "type": "box",
+          "position": [-0.8, 0.23, 0],
+          "material": "iron"
+        },
+        {
+          "size": [0.1, 0.46, 0.5],
+          "id": "bench-leg-2",
+          "name": "Leg",
+          "type": "box",
+          "position": [0.8, 0.23, 0],
+          "material": "iron"
+        }
+      ]
+    },
+    "lamp": {
+      "id": "lamp",
+      "name": "Lamp",
+      "type": "group",
+      "children": [
+        {
+          "id": "lamp-pole",
+          "name": "Pole",
+          "type": "cylinder",
+          "radiusTop": 0.06,
+          "radiusBottom": 0.09,
+          "height": 3,
+          "segments": 10,
+          "position": [0, 1.5, 0],
+          "material": "iron"
+        },
+        {
+          "id": "lamp-light",
+          "name": "Light",
+          "type": "sphere",
+          "radius": 0.24,
+          "segments": 16,
+          "position": [0, 3.1, 0],
+          "material": "glass"
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "id": "meadow",
+      "name": "Meadow",
+      "type": "circle",
+      "radius": 100,
+      "segments": 64,
+      "position": [0, -0.05, 0],
+      "material": "meadow"
+    },
+    {
+      "size": [48, 0.2, 48],
+      "logic": "square",
+      "id": "square",
+      "name": "Square",
+      "type": "box",
+      "position": [0, -0.1, 0],
+      "material": "paving",
+      "cast": false
+    },
+    {
+      "id": "bands",
+      "name": "Inlaid bands",
+      "type": "group",
+      "children": [
+        {
+          "size": [46, 0.02, 0.35],
+          "id": "band-1",
+          "name": "Band 1",
+          "type": "box",
+          "position": [0, 0.01, -22.6],
+          "material": "inlay",
+          "cast": false
+        },
+        {
+          "size": [46, 0.02, 0.35],
+          "id": "band-2",
+          "name": "Band 2",
+          "type": "box",
+          "position": [0, 0.01, 22.6],
+          "material": "inlay",
+          "cast": false
+        },
+        {
+          "size": [0.35, 0.02, 46],
+          "id": "band-3",
+          "name": "Band 3",
+          "type": "box",
+          "position": [-22.6, 0.01, 0],
+          "material": "inlay",
+          "cast": false
+        },
+        {
+          "size": [0.35, 0.02, 46],
+          "id": "band-4",
+          "name": "Band 4",
+          "type": "box",
+          "position": [22.6, 0.01, 0],
+          "material": "inlay",
+          "cast": false
+        }
+      ]
+    },
+    {
+      "id": "curb",
+      "name": "Curb",
+      "type": "group",
+      "children": [
+        {
+          "size": [48.45, 0.25, 0.45],
+          "id": "curb-1",
+          "name": "Curb 1",
+          "type": "box",
+          "position": [0, 0.05, -24.05],
+          "material": "stone"
+        },
+        {
+          "size": [48.45, 0.25, 0.45],
+          "id": "curb-2",
+          "name": "Curb 2",
+          "type": "box",
+          "position": [0, 0.05, 24.05],
+          "material": "stone"
+        },
+        {
+          "size": [0.45, 0.25, 48.45],
+          "id": "curb-3",
+          "name": "Curb 3",
+          "type": "box",
+          "position": [-24.05, 0.05, 0],
+          "material": "stone"
+        },
+        {
+          "size": [0.45, 0.25, 48.45],
+          "id": "curb-4",
+          "name": "Curb 4",
+          "type": "box",
+          "position": [24.05, 0.05, 0],
+          "material": "stone"
+        }
+      ]
+    },
+    {
+      "id": "fountain-ring",
+      "name": "Ring round the fountain",
+      "type": "ring",
+      "inner": 4.1,
+      "outer": 4.5,
+      "segments": 96,
+      "position": [0, 0.012, 0],
+      "material": "inlay"
+    },
+    {
+      "id": "fountain",
+      "name": "Fountain",
+      "type": "group",
+      "children": [
+        {
+          "id": "basin",
+          "name": "Basin",
+          "type": "cylinder",
+          "radiusTop": 3.2,
+          "radiusBottom": 3.4,
+          "height": 0.6,
+          "segments": 64,
+          "open": true,
+          "position": [0, 0.3, 0],
+          "material": "stone"
+        },
+        {
+          "id": "lip",
+          "name": "Lip",
+          "type": "torus",
+          "radius": 3.2,
+          "tube": 0.16,
+          "segments": 96,
+          "position": [0, 0.6, 0],
+          "rotation": [90, 0, 0],
+          "material": "stone"
+        },
+        {
+          "id": "water",
+          "name": "Water",
+          "type": "circle",
+          "radius": 3.15,
+          "segments": 64,
+          "position": [0, 0.48, 0],
+          "material": "water"
+        },
+        {
+          "id": "pillar",
+          "name": "Pillar",
+          "type": "cylinder",
+          "radiusTop": 0.28,
+          "radiusBottom": 0.4,
+          "height": 1.7,
+          "segments": 24,
+          "position": [0, 0.9, 0],
+          "material": "stone"
+        },
+        {
+          "id": "bowl",
+          "name": "Bowl",
+          "type": "cylinder",
+          "radiusTop": 1.15,
+          "radiusBottom": 0.5,
+          "height": 0.35,
+          "segments": 40,
+          "position": [0, 1.85, 0],
+          "material": "stone"
+        },
+        {
+          "id": "spout",
+          "name": "Spout",
+          "type": "sphere",
+          "radius": 0.42,
+          "segments": 24,
+          "position": [0, 2.15, 0],
+          "scale": [1, 0.7, 1],
+          "material": "water",
+          "cast": false
+        },
+        {
+          "logic": "fountain",
+          "id": "fountain-edge",
+          "name": "Fountain edge (nobody walks in)",
+          "type": "marker",
+          "radius": 3.2
+        }
+      ]
+    },
+    {
+      "logic": "spawn",
+      "id": "spawn",
+      "name": "Where players come in",
+      "type": "marker",
+      "radius": 0.6,
+      "position": [0, 0, 7]
+    },
+    {
+      "id": "benches",
+      "name": "Benches",
+      "type": "group",
+      "children": [
+        {
+          "id": "bench-1",
+          "name": "Bench 1",
+          "type": "prefab",
+          "prefab": "bench",
+          "position": [3.635, 0, 8.777],
+          "rotation": [0, 22.5, 0]
+        },
+        {
+          "id": "bench-2",
+          "name": "Bench 2",
+          "type": "prefab",
+          "prefab": "bench",
+          "position": [8.777, 0, 3.635],
+          "rotation": [0, 67.5, 0]
+        },
+        {
+          "id": "bench-3",
+          "name": "Bench 3",
+          "type": "prefab",
+          "prefab": "bench",
+          "position": [8.777, 0, -3.635],
+          "rotation": [0, 112.5, 0]
+        },
+        {
+          "id": "bench-4",
+          "name": "Bench 4",
+          "type": "prefab",
+          "prefab": "bench",
+          "position": [3.635, 0, -8.777],
+          "rotation": [0, 157.5, 0]
+        },
+        {
+          "id": "bench-5",
+          "name": "Bench 5",
+          "type": "prefab",
+          "prefab": "bench",
+          "position": [-3.635, 0, -8.777],
+          "rotation": [0, 202.5, 0]
+        },
+        {
+          "id": "bench-6",
+          "name": "Bench 6",
+          "type": "prefab",
+          "prefab": "bench",
+          "position": [-8.777, 0, -3.635],
+          "rotation": [0, 247.5, 0]
+        },
+        {
+          "id": "bench-7",
+          "name": "Bench 7",
+          "type": "prefab",
+          "prefab": "bench",
+          "position": [-8.777, 0, 3.635],
+          "rotation": [0, 292.5, 0]
+        },
+        {
+          "id": "bench-8",
+          "name": "Bench 8",
+          "type": "prefab",
+          "prefab": "bench",
+          "position": [-3.635, 0, 8.777],
+          "rotation": [0, 337.5, 0]
+        }
+      ]
+    },
+    {
+      "id": "lamps",
+      "name": "Lamps",
+      "type": "group",
+      "children": [
+        {
+          "id": "lamp-1",
+          "name": "Lamp 1",
+          "type": "prefab",
+          "prefab": "lamp",
+          "position": [8.839, 0, 8.839]
+        },
+        {
+          "id": "lamp-2",
+          "name": "Lamp 2",
+          "type": "prefab",
+          "prefab": "lamp",
+          "position": [8.839, 0, -8.839]
+        },
+        {
+          "id": "lamp-3",
+          "name": "Lamp 3",
+          "type": "prefab",
+          "prefab": "lamp",
+          "position": [-8.839, 0, -8.839]
+        },
+        {
+          "id": "lamp-4",
+          "name": "Lamp 4",
+          "type": "prefab",
+          "prefab": "lamp",
+          "position": [-8.839, 0, 8.839]
+        }
+      ]
+    },
+    {
+      "id": "trees",
+      "name": "Trees",
+      "type": "group",
+      "children": [
+        {
+          "id": "trees-1",
+          "name": "Trees (tree)",
+          "type": "scatter",
+          "item": "tree",
+          "count": 15,
+          "seed": 11,
+          "area": { "size": [73, 73], "shape": "rect", "inner": [53, 53] },
+          "height": [0, 0],
+          "sizes": [0.8, 1.25],
+          "spin": true,
+          "tilt": 0
+        },
+        {
+          "id": "trees-2",
+          "name": "Trees (tree-light)",
+          "type": "scatter",
+          "item": "tree-light",
+          "count": 15,
+          "seed": 12,
+          "area": { "size": [73, 73], "shape": "rect", "inner": [53, 53] },
+          "height": [0, 0],
+          "sizes": [0.8, 1.25],
+          "spin": true,
+          "tilt": 0
+        },
+        {
+          "id": "trees-3",
+          "name": "Trees (tree-dark)",
+          "type": "scatter",
+          "item": "tree-dark",
+          "count": 14,
+          "seed": 13,
+          "area": { "size": [73, 73], "shape": "rect", "inner": [53, 53] },
+          "height": [0, 0],
+          "sizes": [0.8, 1.25],
+          "spin": true,
+          "tilt": 0
+        }
+      ]
+    }
+  ]
+}

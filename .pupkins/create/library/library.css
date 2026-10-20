@@ -1,0 +1,47 @@
+:root { --bg: #12161d; --panel: #1a202b; --panel-2: #222a37; --line: #2f3a4b; --text: #e6ebf2; --dim: #9aa6b8; --accent: #f5c451; --sel: #2b4466; }
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); font: 14px/1.4 system-ui, sans-serif; }
+button, select, input { font: inherit; color: inherit; }
+button { background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer; }
+button:hover { border-color: #4b5a70; background: #283143; }
+button.primary { background: var(--accent); color: #1b1b1b; border-color: var(--accent); font-weight: 600; }
+header { position: sticky; top: 0; z-index: 2; display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; padding: 10px 16px; background: var(--panel); border-bottom: 1px solid var(--line); }
+h1 { margin: 0; font-size: 18px; white-space: nowrap; }
+#count { color: var(--dim); font-weight: 400; font-size: 14px; }
+#search { flex: 1 1 260px; min-width: 0; background: #10141b; border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; }
+select { background: #10141b; border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chips button.on { background: var(--sel); border-color: #4f78b0; }
+main { display: flex; align-items: flex-start; }
+#grid { flex: 1; min-width: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; padding: 14px 16px 40px; }
+.card { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 6px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); cursor: pointer; text-align: center; min-width: 0; }
+.card:hover, .card:focus-visible { border-color: #4b5a70; outline: none; }
+.card.on { border-color: var(--accent); }
+.card img { width: 128px; height: 128px; border-radius: 8px; background: repeating-conic-gradient(#232a37 0 25%, #1d2430 0 50%) 0 0 / 16px 16px; }
+.card b { font-size: 13px; }
+.card small { color: var(--dim); font-size: 11px; overflow-wrap: anywhere; }
+aside { position: sticky; top: 60px; width: min(440px, 42vw); max-height: calc(100vh - 70px); overflow: auto; margin: 14px 16px 14px 0; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); }
+#viewer { position: relative; aspect-ratio: 1; background: radial-gradient(circle at 50% 40%, #2c3647, #151a22); border-radius: 12px 12px 0 0; overflow: hidden; }
+#viewer canvas { display: block; width: 100%; height: 100%; }
+#viewer-note { position: absolute; inset: auto 0 0 0; padding: 6px 10px; color: var(--dim); font-size: 12px; background: linear-gradient(transparent, rgba(0, 0, 0, 0.5)); pointer-events: none; }
+#info { padding: 12px 14px 16px; }
+#info h2 { margin: 0 0 2px; font-size: 17px; }
+#info .id { font-family: ui-monospace, Consolas, monospace; color: var(--accent); }
+#info dl { display: grid; grid-template-columns: auto 1fr; gap: 3px 12px; margin: 10px 0; font-size: 13px; }
+#info dt { color: var(--dim); }
+#info dd { margin: 0; }
+.tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.tag { padding: 1px 7px; border-radius: 99px; background: var(--panel-2); color: var(--dim); font-size: 12px; cursor: pointer; }
+.use { margin: 10px 0 4px; font-weight: 600; font-size: 13px; }
+pre { position: relative; margin: 4px 0 8px; padding: 8px 10px; background: #0f1319; border: 1px solid var(--line); border-radius: 8px; font-size: 12px; white-space: pre-wrap; overflow-wrap: anywhere; }
+pre button { position: absolute; top: 4px; right: 4px; padding: 1px 7px; font-size: 11px; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.actions a { color: var(--dim); font-size: 12px; align-self: center; }
+#empty, #trouble { padding: 20px; color: var(--dim); text-align: center; }
+#trouble { color: #ff9b8a; }
+@media (max-width: 760px) {
+  main { flex-direction: column-reverse; }
+  aside { position: static; width: auto; max-height: none; margin: 12px 16px 0; }
+  #grid { grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); }
+  .card img { width: 100px; height: 100px; }
+}

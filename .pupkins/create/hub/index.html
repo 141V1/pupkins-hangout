@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pupkins · hub emulator</title>
+  <link rel="icon" href="data:," />
+  <link rel="stylesheet" href="/__pupkins/hub/hub.css" />
+  <script id="hub-config" type="application/json">{{config}}</script>
+</head>
+<body>
+  <div id="stage">
+    <header id="bar">
+      <div class="brand"><b>Pupkins</b><span id="game-name"></span><em title="pupkins-create dev: the hub's bar, the game in its sandboxed frame on its own origin, the platform's CSP and guard script, the bridge">hub emulator</em></div>
+      <label class="player" title="The hub's player: the game gets them from hub.player()">
+        <input id="player-name" maxlength="16" spellcheck="false" placeholder="Name" />
+        <select id="player-rider"></select>
+      </label>
+      <div class="tools">
+        <button id="menu" title="The hub's menu over the game: the game hears 'pause' (a local game pauses), then 'resume'">Menu</button>
+        <button id="fullscreen" title="Fullscreen: the hub's bar and the game together">Fullscreen</button>
+        <button id="report" title="Report the game (on pupkins.gg it goes to review)">Report</button>
+        <button id="log-button" title="What the game and the hub said to each other, and what the guard saw">Log <span id="log-count">0</span></button>
+      </div>
+    </header>
+    <main id="main">
+      <iframe id="game" title="The game"
+        sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-orientation-lock"
+        allow="gamepad; autoplay; accelerometer; gyroscope"></iframe>
+      <div id="loading" class="cover"><div class="card"><div class="spinner"></div><p>Loading <span id="loading-name"></span>…</p><small id="loading-note"></small></div></div>
+      <div id="paused" class="cover" hidden><div class="card"><h2>Hub menu</h2><p>The game heard <code>pause</code>: a local game waits until the menu closes.</p><button id="resume">Back to the game</button></div></div>
+      <div id="exited" class="cover" hidden><div class="card"><h2>Back in the hub</h2><p>The game asked to go back to the hub (<code>hub.exit()</code>).</p><button id="again">Play it again</button></div></div>
+      <div id="reported" class="cover" hidden><div class="card"><h2>Report this game</h2><p>On pupkins.gg this sends the game to review, with what the player says. Here nothing is sent.</p><button id="report-done">Close</button></div></div>
+      <aside id="log" hidden><header>Bridge and guard <button id="log-close" title="Close">×</button></header><ol id="log-lines"></ol></aside>
+      <div id="toast" hidden></div>
+    </main>
+  </div>
+  <script type="module" src="/__pupkins/hub/hub.js"></script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pupkins props</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./library.css">
+  <script type="importmap">
+    { "imports": {
+      "three": "/node_modules/@pupkins/create/three/three.module.js",
+      "three/addons/": "/node_modules/@pupkins/create/three/addons/",
+      "@pupkins/create/avatars": "/node_modules/@pupkins/create/avatars.js"
+    } }
+  </script>
+</head>
+<body>
+  <header>
+    <h1>Props <span id="count"></span></h1>
+    <input id="search" type="search" placeholder="Search: lantern, tree, gold, sky…" autocomplete="off" spellcheck="false">
+    <div id="kinds" class="chips"></div>
+    <select id="collection"><option value="">Every collection</option></select>
+  </header>
+  <main>
+    <section id="grid" aria-label="Props"></section>
+    <aside id="detail" hidden>
+      <div id="viewer"><div id="viewer-note"></div></div>
+      <div id="info"></div>
+    </aside>
+  </main>
+  <p id="empty" hidden>Nothing matches. Try fewer words.</p>
+  <p id="trouble" hidden></p>
+  <script type="module" src="./library.js"></script>
+</body>
+</html>

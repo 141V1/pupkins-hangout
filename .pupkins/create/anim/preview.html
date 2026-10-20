@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>clip preview</title>
+  <link rel="icon" href="data:," />
+  <script type="importmap">
+    { "imports": {
+      "@pupkins/create/avatars": "/node_modules/@pupkins/create/avatars.js",
+      "three": "/node_modules/@pupkins/create/three/three.module.js",
+      "three/addons/": "/node_modules/@pupkins/create/three/addons/"
+    } }
+  </script>
+  <style>html, body { margin: 0; background: #1b2430; } canvas { display: block; }</style>
+</head>
+<body>
+  <canvas id="sheet"></canvas>
+  <script type="module">
+    // pupkins-create anim's preview: the game's clips on our characters, played by the avatars' own engine as a game
+    // plays them (loadAvatar with the game's clips files, then avatar.play(name)), shot from the front three-quarters
+    // and from the side at six moments. `pupkins-create anim preview` opens this page in headless Chrome and saves
+    // window.sheet(name) for each clip; window.clips lists them. ?clips= the clips files ('{rig}': the character).
+    import * as THREE from 'three';
+    import { loadAvatar } from '@pupkins/create/avatars';
+
+    const TILE = 220;
+    const LEFT = 76;
+    const TOP = 34;
+    const BOTTOM = 24;
+    const COLUMNS = 6;
+    const VIEWS = [['front', -0.62], ['side', Math.PI / 2]];   // (the front from its right, the side from its left: both arms seen)
+    const files = new URLSearchParams(location.search).get('clips') ?? '/client/anims/{rig}.glb';
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+    renderer.setPixelRatio(1);
+    renderer.setSize(TILE, TILE);
+    renderer.shadowMap.enabled = true;
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xdfe6ee);
+    scene.add(new THREE.HemisphereLight(0xffffff, 0x8899aa, 1.6));
+    const sun = new THREE.DirectionalLight(0xffffff, 2.2);
+    sun.position.set(3, 6, 4);
+    sun.castShadow = true;
+    Object.assign(sun.shadow.camera, { left: -4, right: 4, top: 4, bottom: -4 });
+    scene.add(sun);
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(16, 16), new THREE.MeshStandardMaterial({ color: 0xbfc8d2 }));
+    floor.rotation.x = -Math.PI / 2;
+    floor.receiveShadow = true;
+    scene.add(floor);
+    const grid = new THREE.GridHelper(16, 32, 0x7a8696, 0x9aa5b2);
+    grid.position.y = 0.002;
+    scene.add(grid);
+    const camera = new THREE.PerspectiveCamera(32, 1, 0.05, 60);
+
+    const RIGS = [['moki', 'Moki'], ['schiffy', 'Schiffy']];
+    const rigs = {};
+    for (const [key] of RIGS) {
+      const avatar = await loadAvatar(key, { clips: [files], idleBreaks: false });
+      avatar.lod = false;
+      avatar.root.visible = false;
+      scene.add(avatar.root);
+      rigs[key] = { avatar, names: [...(avatar.packs[files]?.clips.keys() ?? [])] };
+    }
+    window.clips = [...new Set(RIGS.flatMap(([key]) => rigs[key].names))];
+
+    const sheet = document.getElementById('sheet');
+    const ctx = sheet.getContext('2d');
+    window.sheet = (name) => {
+      sheet.width = LEFT + TILE * COLUMNS;
+      sheet.height = TOP + TILE * RIGS.length * VIEWS.length + BOTTOM;
+      ctx.fillStyle = '#1b2430';
+      ctx.fillRect(0, 0, sheet.width, sheet.height);
+      ctx.font = '13px system-ui, sans-serif';
+      let title = name;
+      let moments = [];
+      RIGS.forEach(([key, label], r) => {
+        const { avatar } = rigs[key];
+        const y0 = TOP + r * VIEWS.length * TILE;
+        ctx.fillStyle = '#e2e8f0';
+        VIEWS.forEach(([view], v) => { ctx.fillText(label, 8, y0 + v * TILE + 20); ctx.fillText(view, 8, y0 + v * TILE + 38); });
+        const clip = avatar.actions[name]?.getClip();
+        if (!clip) {
+          ctx.fillText(`no ${name} for ${label}`, LEFT + 12, y0 + TILE / 2);
+          return;
+        }
+        const d = clip.duration;
+        const play = clip.userData?.play ?? {};
+        title = `${name}  ${d.toFixed(2)} s${['loop', 'hold', 'interruptible'].filter((k) => play[k]).map((k) => `  ${k}`).join('')}`;
+        moments = Array.from({ length: COLUMNS }, (_, i) => (i === COLUMNS - 1 ? Math.max(0, d - (play.loop || play.hold ? 0 : 1 / 60)) : (d * i) / (COLUMNS - 1)));
+        // as a game plays it: standing, then avatar.play(name) (no fade-in, so each shot is the clip's own moment);
+        // played through twice: once to find where it goes (the camera fits all six moments), once to shoot it
+        const playTo = (shoot) => {
+          avatar.play('Idle');
+          for (let i = 0; i < 30; i++) avatar.update(1 / 30);
+          avatar.play(name, { fade: 0 });
+          avatar.update(1e-4);
+          let t = 0;
+          moments.forEach((at, c) => {
+            while (t < at - 1e-6) { const dt = Math.min(1 / 60, at - t); avatar.update(dt); t += dt; }
+            avatar.root.updateMatrixWorld(true);
+            shoot(c);
+          });
+        };
+        avatar.root.visible = true;
+        const box = new THREE.Box3();
+        playTo(() => box.union(new THREE.Box3().setFromObject(avatar.root, true)));
+        const centre = box.getCenter(new THREE.Vector3());
+        const size = box.getSize(new THREE.Vector3());
+        const span = Math.max(size.y, Math.hypot(size.x, size.z), avatar.height) * 1.15;
+        const reach = span / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2))) + Math.hypot(size.x, size.z) / 2;
+        playTo((c) => {
+          VIEWS.forEach(([, yaw], v) => {
+            camera.position.set(centre.x + Math.sin(yaw) * reach, centre.y + span * 0.18, centre.z + Math.cos(yaw) * reach);
+            camera.lookAt(centre);
+            renderer.render(scene, camera);
+            ctx.drawImage(renderer.domElement, LEFT + c * TILE, y0 + v * TILE);
+          });
+        });
+        avatar.root.visible = false;
+        avatar.play('Idle');
+      });
+      ctx.strokeStyle = '#1b2430';
+      for (let c = 1; c < COLUMNS; c++) { ctx.beginPath(); ctx.moveTo(LEFT + c * TILE + 0.5, TOP); ctx.lineTo(LEFT + c * TILE + 0.5, sheet.height - BOTTOM); ctx.stroke(); }
+      ctx.fillStyle = '#fbbf24';
+      ctx.font = 'bold 17px system-ui, sans-serif';
+      ctx.fillText(title, LEFT + 6, 23);
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = '13px system-ui, sans-serif';
+      moments.forEach((at, c) => ctx.fillText(`${at.toFixed(2)} s`, LEFT + c * TILE + 6, sheet.height - 7));
+      return sheet.toDataURL('image/png');
+    };
+    window.ready = true;
+  </script>
+</body>
+</html>

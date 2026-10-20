@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="pupkins-edit-token" content="{{token}}" />
+  <title>Scenes · Pupkins Create</title>
+  <link rel="icon" href="data:," />
+  <link rel="stylesheet" href="./editor.css" />
+  <script type="importmap">
+    { "imports": {
+      "three": "/node_modules/@pupkins/create/three/three.module.js",
+      "three/addons/": "/node_modules/@pupkins/create/three/addons/",
+      "@pupkins/create/avatars": "/node_modules/@pupkins/create/avatars.js"
+    } }
+  </script>
+</head>
+<body>
+  <header id="toolbar">
+    <span class="brand" title="Pupkins Create's scene editor">◆ <span id="game-name">Game</span></span>
+    <select id="scene-picker" title="The game's scenes (scenes/*.scene.json)"></select>
+    <button data-act="new-scene" data-menu title="New, copy or delete a scene">Scene ▾</button>
+    <span class="sep"></span>
+    <button id="undo" data-act="undo" title="Undo (Ctrl+Z)">↶</button>
+    <button id="redo" data-act="redo" title="Redo (Ctrl+Y)">↷</button>
+    <span class="sep"></span>
+    <span id="tools3d">
+      <button data-tool="translate" title="Move (W)">✥<span class="label"> Move</span></button>
+      <button data-tool="rotate" title="Turn (E)">⟳<span class="label"> Turn</span></button>
+      <button data-tool="scale" title="Size (R)">⤡<span class="label"> Size</span></button>
+      <button data-act="space" title="Move and turn along the world's axes or the object's own">⟲ world</button>
+      <button id="gamecam" data-act="gamecam" title="Look through the game's camera (C)">👁<span class="label"> Game camera</span></button>
+      <button data-act="look" data-menu title="Look from a side">Views ▾</button>
+    </span>
+    <button id="snap" data-act="snap" title="Snap to the grid and to 15° turns (X; hold Alt in 2d to place freely)">⌗<span class="label"> Snap</span></button>
+    <button data-act="grid" title="Show or hide the grid (G)">▦<span class="label"> Grid</span></button>
+    <button data-act="frame" title="Frame the selection, or everything (F)">⛶<span class="label"> Frame</span></button>
+    <span class="grow"></span>
+    <span id="save-state"></span>
+    <button id="save" data-act="save" class="primary" title="Save the scene (Ctrl+S): the game reloads with it">Save</button>
+    <button data-act="play" title="Open the game in a tab (it reloads on each save)">▶ Play</button>
+    <button data-act="help" title="Keys and tips (?)">?</button>
+  </header>
+  <nav id="tabs"></nav>
+  <div id="body">
+    <aside id="left">
+      <div id="structure">
+        <button id="add" data-act="add" data-menu class="primary" title="Add an object (A)">+ Add</button>
+        <button data-act="duplicate" title="Duplicate (Ctrl+D)">⧉</button>
+        <button data-act="group" title="Group the selected (Ctrl+G)">▣</button>
+        <button data-act="prefab" title="Make the selected object a prefab">⬡ Prefab</button>
+        <button data-act="delete" title="Delete (Del)">🗑</button>
+      </div>
+      <div id="hierarchy"></div>
+    </aside>
+    <main id="viewport">
+      <div id="view3d" class="view"></div>
+      <div id="view2d" class="view" hidden></div>
+      <div id="empty" hidden>
+        <h2>No scenes yet</h2>
+        <p>A scene is a place in the game, laid out here and saved as <code>scenes/&lt;name&gt;.scene.json</code>.
+          The game loads it with <code>loadScene()</code> from <code>@pupkins/create/scene</code>.</p>
+        <p><button class="primary" data-act="new-3d">New 3d scene</button> <button data-act="new-2d">New 2d scene</button></p>
+      </div>
+    </main>
+    <aside id="right"><div id="inspector"></div></aside>
+  </div>
+  <footer id="status">
+    <span id="summary"></span>
+    <span id="problems" hidden></span>
+    <span id="message"></span>
+  </footer>
+
+  <div id="add-menu" class="menu" hidden></div>
+  <div id="new-menu" class="menu" hidden>
+    <button data-act="new-3d">New 3d scene…</button>
+    <button data-act="new-2d">New 2d scene…</button>
+    <button data-act="duplicate-scene">Copy this scene…</button>
+    <button data-act="delete-scene" class="danger">Delete this scene…</button>
+  </div>
+  <div id="look-menu" class="menu" hidden>
+    <button data-look="front">Front</button><button data-look="back">Back</button>
+    <button data-look="left">Left</button><button data-look="right">Right</button><button data-look="top">Top</button>
+  </div>
+  <div id="help" hidden>
+    <div class="help-card">
+      <h2>The scene editor</h2>
+      <div class="cols">
+        <dl>
+          <dt>Click</dt><dd>select (again: the part inside); Shift or Ctrl adds; Alt picks the innermost</dd>
+          <dt>Drag</dt><dd>3d: orbit (left), pan (right or middle), zoom (wheel); 2d: drag to move, the yellow corner to size, the blue dot to turn, right-drag to pan</dd>
+          <dt>W E R</dt><dd>move, turn, size (3d)</dd>
+          <dt>F</dt><dd>frame the selection</dd>
+          <dt>C</dt><dd>look through the game's camera</dd>
+          <dt>X</dt><dd>snap on and off</dd>
+          <dt>G</dt><dd>grid</dd>
+          <dt>A</dt><dd>add an object</dd>
+        </dl>
+        <dl>
+          <dt>Ctrl+S</dt><dd>save (the game reloads with it)</dd>
+          <dt>Ctrl+Z / Y</dt><dd>undo / redo</dd>
+          <dt>Ctrl+D</dt><dd>duplicate</dd>
+          <dt>Ctrl+C / V</dt><dd>copy / paste (into another scene too)</dd>
+          <dt>Ctrl+G</dt><dd>group</dd>
+          <dt>Del</dt><dd>delete</dd>
+          <dt>Number fields</dt><dd>drag the label to scrub (Shift: faster, Alt: finer); type a sum like 2*3</dd>
+        </dl>
+      </div>
+      <p><b>Prefabs</b> are objects to place many times (edit one, they all change) or for the game to make as it plays:
+        <code>world.spawn('gem')</code>. <b>Tags</b> let the game find objects (<code>world.all('coin')</code>), and a
+        <b>logic name</b> hands an object's place to the rules, as whole numbers, in the scene's logic file.</p>
+      <p class="muted">Press Esc or ? to close.</p>
+    </div>
+  </div>
+  <script type="module" src="./editor.js"></script>
+</body>
+</html>
