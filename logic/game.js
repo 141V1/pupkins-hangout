@@ -13,7 +13,7 @@ export const SQUARE = SCENE.square[0].w / 2 / MM;   // metres from the centre to
 export const FOUNTAIN = SCENE.fountain[0].r / MM;   // the fountain basin's radius: nobody walks through it (3.2)
 const SPAWN = { x: SCENE.spawn[0].x / MM, z: SCENE.spawn[0].z / MM };
 export const SPEED = { walk: 2.2, run: 5.2 };   // metres a second (the characters' walk and run look right at these)
-export const EMOTES = ['Wave', 'Cheer', 'Jump', 'Cute', 'Yes', 'Bow'];
+export const EMOTES = ['Wave', 'Cheer', 'Cute', 'Yes', 'Bow'];
 
 export default defineLogic({
   mode: 'presence',
